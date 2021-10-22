@@ -9,7 +9,6 @@
 
 import pycreate2
 import time
-from getkey import getkey, keys
 from bluedot import BlueDot
 from signal import pause
 
@@ -121,8 +120,12 @@ def stop_robot():
     turn_robot(direction, 1)
     return
 
+def connect_robot():
+    print('BlueDot Connected...')
+    return
+
 def disconnect_robot():
-    _connected = False
+    print('BlueDot Disconnected...')
     return
 
 if __name__ == "__main__":
@@ -138,16 +141,13 @@ if __name__ == "__main__":
     bot.safe()
 
     bd = BlueDot()
-    print('BlueDot connected!')
-    _connected = True
     bd.when_pressed = dpad
     bd.when_moved = dpad
     bd.when_released = stop_robot
+    bd.when_client_connects = connect_robot
     bd.when_client_disconnects = disconnect_robot
 
-    while _connected:
-        time.sleep(0.1)
+    pause()
 
-    print('shutting down ... bye')
     bot.drive_stop()
     time.sleep(0.1)
