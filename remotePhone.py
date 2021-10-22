@@ -11,6 +11,7 @@ import pycreate2
 import time
 from getkey import getkey, keys
 from bluedot import BlueDot
+from signal import pause
 
 CONST_FORWARD_LEFT  = 0
 CONST_FORWARD       = 1
@@ -21,6 +22,8 @@ CONST_ROTATE_RIGHT  = 5
 CONST_BACK_LEFT     = 6
 CONST_BACK          = 7
 CONST_BACK_RIGHT    = 8
+
+_connected = True
 
 def move_robot(lft, rht, dt, s):
     print(s)
@@ -86,29 +89,6 @@ def turn_robot(direction, speed):
         move_robot(l, r, 1, m)
     return
 
-def change_direction(key):
-    direction = CONST_STOP
-    if key in ['q', 'w', 'e', 'a', 's', 'd', 'z', 'x', 'c']:
-        if key == 'q':
-            direction = CONST_FORWARD_LEFT
-        elif key == 'w':
-            direction = CONST_FORWARD
-        elif key == 'e':
-            direction = CONST_FORWARD_RIGHT
-        elif key == 'a':
-            direction = CONST_ROTATE_LEFT
-        elif key == 's':
-            direction = CONST_STOP
-        elif key == 'd':
-            direction = CONST_ROTATE_RIGHT
-        elif key == 'z':
-            direction = CONST_BACK_LEFT
-        elif key == 'x':
-            direction = CONST_BACK
-        elif key == 'c':
-            direction = CONST_BACK_RIGHT
-    return direction
-
 def dpad(pos):
     print('using dpad')
     if pos.top:
@@ -135,6 +115,16 @@ def dpad(pos):
         print('unknown')
     return
 
+def stop_robot():
+    direction = CONST_STOP
+    print('stop')
+    turn_robot(direction, 1)
+    return
+
+def disconnect_robot():
+    _connected = False
+    return
+
 if __name__ == "__main__":
     # Create a Create2 Bot
     port = '/dev/ttyUSB0'  # this is the serial port on my raspberry pi
@@ -149,25 +139,14 @@ if __name__ == "__main__":
 
     bd = BlueDot()
     print('BlueDot connected!')
+    _connected = True
     bd.when_pressed = dpad
     bd.when_moved = dpad
-    bd.when_release = dpad
+    bd.when_released = stop_robot
+    bd.when_client_disconnects = disconnect_robot
 
-    done = False
-    key = 's'
-    direction = CONST_STOP
-    speed = 1
-    while not done:
-        key = getkey()
-        if key in ['o', 'l']:
-            speed = calc_speed(key, speed)
-            turn_robot(direction, speed)
-        elif key in ['q', 'w', 'e', 'a', 's', 'd', 'z', 'x', 'c']:
-            direction = change_direction(key)
-            turn_robot(direction, speed)
-        elif key == 'p':
-            turn_robot(CONST_STOP, 0)
-            done = True
+    while _connected:
+        time.sleep(0.1)
 
     print('shutting down ... bye')
     bot.drive_stop()
