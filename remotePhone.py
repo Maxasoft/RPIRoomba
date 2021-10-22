@@ -110,6 +110,7 @@ def change_direction(key):
     return direction
 
 def dpad(pos):
+    print('using dpad')
     if pos.top:
         direction = CONST_FORWARD
     elif pos.bottom:
@@ -120,6 +121,8 @@ def dpad(pos):
         direction = CONST_ROTATE_RIGHT
     elif pos.middle:
         direction = CONST_STOP
+    else:
+        print('unknown')
     return
 
 if __name__ == "__main__":
