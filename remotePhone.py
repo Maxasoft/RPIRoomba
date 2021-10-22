@@ -113,14 +113,24 @@ def dpad(pos):
     print('using dpad')
     if pos.top:
         direction = CONST_FORWARD
+        print('up')
+        turn_robot(direction, 1)
     elif pos.bottom:
         direction = CONST_BACK
+        print('back')
+        turn_robot(direction, 1)
     elif pos.left:
         direction = CONST_ROTATE_LEFT
+        print('left')
+        turn_robot(direction, 1)
     elif pos.right:
         direction = CONST_ROTATE_RIGHT
+        print('right')
+        turn_robot(direction, 1)
     elif pos.middle:
         direction = CONST_STOP
+        print('stop')
+        turn_robot(direction, 1)
     else:
         print('unknown')
     return
