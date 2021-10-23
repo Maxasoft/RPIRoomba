@@ -183,7 +183,7 @@ class BlueDotRobot:
         self._bd[0, 1].when_pressed = self.robot_left
         self._bd[1, 1].when_pressed = self.robot_stop
         self._bd[2, 1].when_pressed = self.robot_right
-        self._bd[3, 1].when_pressed = self.robot_exit
+        #self._bd[3, 1].when_pressed = self.robot_exit
         self._bd[0, 2].when_pressed = self.robot_back_left
         self._bd[1, 2].when_pressed = self.robot_back
         self._bd[2, 2].when_pressed = self.robot_back_right
@@ -208,6 +208,7 @@ def main():
 
     # Register the signal handlers
     signal.signal(signal.SIGTERM, service_shutdown)
+    signal.signal(signal.SIGINT, service_shutdown)
 
     try:
         bd_robot = BlueDotRobot()
