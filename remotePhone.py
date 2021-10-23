@@ -162,41 +162,49 @@ class BlueDotRobot:
         return
     
     def start(self):
-        # Create a Create2 Bot
-        port = '/dev/ttyUSB0'  # this is the serial port on my raspberry pi
-        baud = {
-            'default': 115200,
-            'alt': 19200  # shouldn't need this unless you accidentally set it to this
-        }
+        # Register the signal handlers
+        signal.signal(signal.SIGTERM, service_shutdown)
+        signal.signal(signal.SIGINT, service_shutdown)
 
-        self._bot = pycreate2.Create2(port=port, baud=baud['default'])
-        self._bot.start()
-        self._bot.safe()
+        try:
+            # Create a Create2 Bot
+            port = '/dev/ttyUSB0'  # this is the serial port on my raspberry pi
+            baud = {
+                'default': 115200,
+                'alt': 19200  # shouldn't need this unless you accidentally set it to this
+            }
 
-        self._bd = BlueDot(cols=4, rows=3)
-        self._bd.square = True
-        self._bd.border = True
-        self._bd[0, 0].when_pressed = self.robot_forward_left
-        self._bd[1, 0].when_pressed = self.robot_forward
-        self._bd[2, 0].when_pressed = self.robot_forward_right
-        self._bd[3, 0].when_pressed = self.robot_accelerate
-        self._bd[0, 1].when_pressed = self.robot_left
-        self._bd[1, 1].when_pressed = self.robot_stop
-        self._bd[2, 1].when_pressed = self.robot_right
-        #self._bd[3, 1].when_pressed = self.robot_exit
-        self._bd[0, 2].when_pressed = self.robot_back_left
-        self._bd[1, 2].when_pressed = self.robot_back
-        self._bd[2, 2].when_pressed = self.robot_back_right
-        self._bd[3, 2].when_pressed = self.robot_decelerate
+            self._bot = pycreate2.Create2(port=port, baud=baud['default'])
+            self._bot.start()
+            self._bot.safe()
 
-        #self._bd.when_released = self.robot_stop
-        self._bd.when_client_connects = self.connect_bluedot
-        self._bd.when_client_disconnects = self.disconnect_bluedot
+            self._bd = BlueDot(cols=4, rows=3)
+            self._bd.square = True
+            self._bd.border = True
+            self._bd[0, 0].when_pressed = self.robot_forward_left
+            self._bd[1, 0].when_pressed = self.robot_forward
+            self._bd[2, 0].when_pressed = self.robot_forward_right
+            self._bd[3, 0].when_pressed = self.robot_accelerate
+            self._bd[0, 1].when_pressed = self.robot_left
+            self._bd[1, 1].when_pressed = self.robot_stop
+            self._bd[2, 1].when_pressed = self.robot_right
+            #self._bd[3, 1].when_pressed = self.robot_exit
+            self._bd[0, 2].when_pressed = self.robot_back_left
+            self._bd[1, 2].when_pressed = self.robot_back
+            self._bd[2, 2].when_pressed = self.robot_back_right
+            self._bd[3, 2].when_pressed = self.robot_decelerate
 
-        self._speed = 1
-        self._direction = self.CONST_STOP
+            #self._bd.when_released = self.robot_stop
+            self._bd.when_client_connects = self.connect_bluedot
+            self._bd.when_client_disconnects = self.disconnect_bluedot
 
-        pause()
+            self._speed = 1
+            self._direction = self.CONST_STOP
+
+            pause()
+        except ServiceExit:
+            print('Exiting main program')
+            self.bd_robot.robot_exit()
 
         return
 
@@ -206,16 +214,8 @@ def service_shutdown(signum, frame):
 
 def main():
 
-    # Register the signal handlers
-    signal.signal(signal.SIGTERM, service_shutdown)
-    signal.signal(signal.SIGINT, service_shutdown)
-
-    try:
-        bd_robot = BlueDotRobot()
-        bd_robot.start()
-    except ServiceExit:
-        print('Exiting main program')
-        bd_robot.robot_exit()
+    bd_robot = BlueDotRobot()
+    bd_robot.start()
     return
 
 if __name__ == "__main__":
