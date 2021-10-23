@@ -68,14 +68,13 @@ class BlueDotRobot:
     def robot_accelerate(self):
         if self._speed < 10:
             self._speed = self._speed + 1
-            self.move()
-        self.move()
+            #self.move()
         return
 
     def robot_decelerate(self):
         if self._speed > 1:
             self._speed = self._speed - 1
-            self.move()
+            #self.move()
         return
 
     def robot_forward_left(self):
