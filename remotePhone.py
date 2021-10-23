@@ -177,21 +177,32 @@ class BlueDotRobot:
             self._bot.start()
             self._bot.safe()
 
-            self._bd = BlueDot(cols=4, rows=3)
+            self._bd = BlueDot(cols=5, rows=3)
             self._bd.square = True
             self._bd.border = True
+            self._bd.color = "gray"
+
+            # First row of buttons
             self._bd[0, 0].when_pressed = self.robot_forward_left
             self._bd[1, 0].when_pressed = self.robot_forward
             self._bd[2, 0].when_pressed = self.robot_forward_right
-            self._bd[3, 0].when_pressed = self.robot_accelerate
+            self._bd[3, 0].visible = False
+            self._bd[4, 0].when_pressed = self.robot_accelerate
+
+            # Second row of buttons
             self._bd[0, 1].when_pressed = self.robot_left
-            self._bd[1, 1].when_pressed = self.robot_stop
+            self._bd[1, 1].visible = False
             self._bd[2, 1].when_pressed = self.robot_right
-            #self._bd[3, 1].when_pressed = self.robot_exit
+            self._bd[3, 1].visible = False
+            self._bd[4, 1].visible = False
+
+            # Third row of buttons
             self._bd[0, 2].when_pressed = self.robot_back_left
             self._bd[1, 2].when_pressed = self.robot_back
             self._bd[2, 2].when_pressed = self.robot_back_right
-            self._bd[3, 2].when_pressed = self.robot_decelerate
+            self._bd[3, 2].visible = False
+            self._bd[4, 2].when_pressed = self.robot_decelerate
+
 
             #self._bd.when_released = self.robot_stop
             self._bd.when_client_connects = self.connect_bluedot
