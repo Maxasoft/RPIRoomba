@@ -209,7 +209,7 @@ class BlueDotRobot:
         return
 
 def service_shutdown(signum, frame):
-    print('Caught signal %d' & signum)
+    print('Caught signal ' + str(signum))
     raise ServiceExit
 
 def main():
