@@ -10,7 +10,7 @@
 import pycreate2
 import time
 from bluedot import BlueDot, COLORS
-from signal import SIGTERM, pause, signal
+import signal
 
 from remoteKeyboard import CONST_FORWARD_LEFT
 
@@ -201,7 +201,7 @@ class BlueDotRobot:
             self._speed = 1
             self._direction = self.CONST_STOP
 
-            pause()
+            signal.pause()
         except ServiceExit:
             print('Exiting main program')
             self.bd_robot.robot_exit()
