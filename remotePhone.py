@@ -102,34 +102,36 @@ def disconnect_bluedot():
     return
 
 if __name__ == "__main__":
-    # Create a Create2 Bot
-    port = '/dev/ttyUSB0'  # this is the serial port on my raspberry pi
-    baud = {
-        'default': 115200,
-        'alt': 19200  # shouldn't need this unless you accidentally set it to this
-    }
+    try:
+        # Create a Create2 Bot
+        port = '/dev/ttyUSB0'  # this is the serial port on my raspberry pi
+        baud = {
+            'default': 115200,
+            'alt': 19200  # shouldn't need this unless you accidentally set it to this
+        }
 
-    bot = pycreate2.Create2(port=port, baud=baud['default'])
-    bot.start()
-    bot.safe()
+        bot = pycreate2.Create2(port=port, baud=baud['default'])
+        bot.start()
+        bot.safe()
 
-    bd = BlueDot(cols=3, rows=3)
-    bd.square = True
-    bd[0, 0].when_pressed = robot_forward_left
-    bd[1, 0].when_pressed = robot_forward
-    bd[2, 0].when_pressed = robot_forward_right
-    bd[0, 1].when_pressed = robot_left
-    bd[1, 1].when_pressed = robot_stop
-    bd[2, 1].when_pressed = robot_right
-    bd[0, 2].when_pressed = robot_back_left
-    bd[1, 2].when_pressed = robot_back
-    bd[2, 2].when_pressed = robot_back_right
+        bd = BlueDot(cols=3, rows=3)
+        bd.square = True
+        bd[0, 0].when_pressed = robot_forward_left
+        bd[1, 0].when_pressed = robot_forward
+        bd[2, 0].when_pressed = robot_forward_right
+        bd[0, 1].when_pressed = robot_left
+        bd[1, 1].when_pressed = robot_stop
+        bd[2, 1].when_pressed = robot_right
+        bd[0, 2].when_pressed = robot_back_left
+        bd[1, 2].when_pressed = robot_back
+        bd[2, 2].when_pressed = robot_back_right
 
-    bd.when_released = robot_stop
-    bd.when_client_connects = connect_bluedot
-    bd.when_client_disconnects = disconnect_bluedot
+        bd.when_released = robot_stop
+        bd.when_client_connects = connect_bluedot
+        bd.when_client_disconnects = disconnect_bluedot
 
-    pause()
+        pause()
 
-    bot.drive_stop()
-    time.sleep(0.1)
+    except:
+        bot.drive_stop()
+        time.sleep(0.1)
