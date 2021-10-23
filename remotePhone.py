@@ -119,7 +119,6 @@ if __name__ == "__main__":
         bd.square = True
         bd.border = True
         bd[0, 0].when_pressed = robot_forward_left
-        bd[1, 0].color = '00FF00'
         bd[1, 0].when_pressed = robot_forward
         bd[2, 0].when_pressed = robot_forward_right
         bd[0, 1].when_pressed = robot_left
