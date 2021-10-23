@@ -12,17 +12,7 @@ import time
 from bluedot import BlueDot
 from signal import pause
 
-CONST_FORWARD_LEFT  = 0
-CONST_FORWARD       = 1
-CONST_FORWARD_RIGHT = 2
-CONST_ROTATE_LEFT   = 3
-CONST_STOP          = 4
-CONST_ROTATE_RIGHT  = 5
-CONST_BACK_LEFT     = 6
-CONST_BACK          = 7
-CONST_BACK_RIGHT    = 8
-
-_connected = True
+_speed = 1
 
 def move_robot(lft, rht, dt, s):
     print(s)
@@ -40,91 +30,74 @@ def calc_speed(key, speed):
             speed = speed - 1
     return speed
 
-def turn_robot(direction, speed):
-    if direction == CONST_FORWARD_LEFT:
-        l = speed * 50
-        r = speed * 25
-        m = 'fl' + str(speed)
-        move_robot(l, r, 1, m)
-    elif direction == CONST_FORWARD:
-        l = r = speed * 50
-        m = 'f' + str(speed)
-        move_robot(l, r, 1, m)
-    elif direction == CONST_FORWARD_RIGHT:
-        l = speed * 25
-        r = speed * 50
-        m = 'fr' + str(speed)
-        move_robot(l, r, 1, m)
-    elif direction == CONST_ROTATE_LEFT:
-        l = speed * 50
-        r = speed * -50
-        m = 'l' + str(speed)
-        move_robot(l, r, 1, m)
-    elif direction == CONST_STOP:
-        speed = 1
-        l = 0
-        r = 0
-        m = 's' + str(speed)
-        move_robot(l, r, 1, m)
-    elif direction == CONST_ROTATE_RIGHT:
-        l = speed * -50
-        r = speed * 50
-        m = 'r' + str(speed)
-        move_robot(l, r, 1, m)
-    elif direction == CONST_BACK_LEFT:
-        l = speed * -50
-        r = speed * -25
-        m = 'bl' + str(speed)
-        move_robot(l, r, 1, m)
-    elif direction == CONST_BACK:
-        l = speed * -50
-        r = speed * -50
-        m = 'bk' + str(speed)
-        move_robot(l, r, 1, m)
-    elif direction == CONST_BACK_RIGHT:
-        l = speed * -25
-        r = speed * -50
-        m = 'br' + str(speed)
-        move_robot(l, r, 1, m)
+def robot_forward_left():
+    l = _speed * 50
+    r = _speed * 25
+    m = 'fl' + str(_speed)
+    move_robot(l, r, 1, m)
     return
 
-def dpad(pos):
-    print('using dpad')
-    if pos.top:
-        direction = CONST_FORWARD
-        print('up')
-        turn_robot(direction, 1)
-    elif pos.bottom:
-        direction = CONST_BACK
-        print('back')
-        turn_robot(direction, 1)
-    elif pos.left:
-        direction = CONST_ROTATE_LEFT
-        print('left')
-        turn_robot(direction, 1)
-    elif pos.right:
-        direction = CONST_ROTATE_RIGHT
-        print('right')
-        turn_robot(direction, 1)
-    elif pos.middle:
-        direction = CONST_STOP
-        print('stop')
-        turn_robot(direction, 1)
-    else:
-        print('unknown')
+def robot_forward():
+    l = r = _speed * 50
+    m = 'f' + str(_speed)
+    move_robot(l, r, 1, m)
     return
 
-def stop_robot():
-    direction = CONST_STOP
-    print('stop')
-    turn_robot(direction, 1)
+def robot_forward_right():
+    l = _speed * 25
+    r = _speed * 50
+    m = 'fr' + str(_speed)
+    move_robot(l, r, 1, m)
     return
 
-def connect_robot():
+def robot_left():
+    l = _speed * 50
+    r = _speed * -50
+    m = 'l' + str(_speed)
+    move_robot(l, r, 1, m)
+    return
+
+def robot_stop():
+    _speed = 1
+    l = 0
+    r = 0
+    m = 's' + str(_speed)
+    move_robot(l, r, 1, m)
+    return
+
+def robot_right():
+    l = _speed * -50
+    r = _speed * 50
+    m = 'r' + str(_speed)
+    move_robot(l, r, 1, m)
+    return
+
+def robot_back_left():
+    l = _speed * -50
+    r = _speed * -25
+    m = 'bl' + str(_speed)
+    move_robot(l, r, 1, m)
+    return
+
+def robot_back():
+    l = _speed * -50
+    r = _speed * -50
+    m = 'bk' + str(_speed)
+    move_robot(l, r, 1, m)
+    return
+
+def robot_back_right():
+    l = _speed * -25
+    r = _speed * -50
+    m = 'br' + str(_speed)
+    move_robot(l, r, 1, m)
+    return
+
+def connect_bluedot():
     print('BlueDot Connected...')
     return
 
-def disconnect_robot():
+def disconnect_bluedot():
     print('BlueDot Disconnected...')
     return
 
@@ -140,12 +113,21 @@ if __name__ == "__main__":
     bot.start()
     bot.safe()
 
-    bd = BlueDot()
-    bd.when_pressed = dpad
-    bd.when_moved = dpad
-    bd.when_released = stop_robot
-    bd.when_client_connects = connect_robot
-    bd.when_client_disconnects = disconnect_robot
+    bd = BlueDot(cols=3, row=3)
+    bd.square = True
+    bd[0, 0].when_pressed = robot_forward_left
+    bd[1, 0].when_pressed = robot_forward
+    bd[2, 0].when_pressed = robot_forward_right
+    bd[0, 1].when_pressed = robot_left
+    bd[1, 1].when_pressed = robot_stop
+    bd[2, 1].when_pressed = robot_right
+    bd[0, 2].when_pressed = robot_back_left
+    bd[1, 2].when_pressed = robot_back
+    bd[2, 2].when_pressed = robot_back_right
+
+    bd.when_released = robot_stop
+    bd.when_client_connects = connect_bluedot
+    bd.when_client_disconnects = disconnect_bluedot
 
     pause()
 
