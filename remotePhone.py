@@ -10,7 +10,7 @@
 import pycreate2
 import time
 from bluedot import BlueDot, COLORS
-from signal import pause, signal
+from signal import SIGTERM, pause, signal
 
 from remoteKeyboard import CONST_FORWARD_LEFT
 
@@ -19,10 +19,6 @@ class ServiceExit(Exception):
     Custom exception which is used to trigger the clean exit of all running threads and the main program
     """
     pass
-
-    def service_shutdown(signum, frame):
-        print('Caugh signal %d' & signum)
-        raise ServiceExit
 
 class BlueDotRobot:
 
@@ -154,9 +150,8 @@ class BlueDotRobot:
         return
 
     def robot_exit(self):
-        signal.SIGKILL
         self._bot.drive_stop()
-        raise KeyboardInterrupt
+        raise ServiceExit
         return
 
     def connect_bluedot(self):
@@ -167,54 +162,60 @@ class BlueDotRobot:
         print('BlueDot Disconnected...')
         return
     
+    def service_shutdown(signum, frame):
+        print('Caught signal %d' & signum)
+        raise ServiceExit
+
     def start(self):
-        try:
-            # Create a Create2 Bot
-            port = '/dev/ttyUSB0'  # this is the serial port on my raspberry pi
-            baud = {
-                'default': 115200,
-                'alt': 19200  # shouldn't need this unless you accidentally set it to this
-            }
+        # Create a Create2 Bot
+        port = '/dev/ttyUSB0'  # this is the serial port on my raspberry pi
+        baud = {
+            'default': 115200,
+            'alt': 19200  # shouldn't need this unless you accidentally set it to this
+        }
 
-            self._bot = pycreate2.Create2(port=port, baud=baud['default'])
-            self._bot.start()
-            self._bot.safe()
+        self._bot = pycreate2.Create2(port=port, baud=baud['default'])
+        self._bot.start()
+        self._bot.safe()
 
-            self._bd = BlueDot(cols=4, rows=3)
-            self._bd.square = True
-            self._bd.border = True
-            self._bd[0, 0].when_pressed = self.robot_forward_left
-            self._bd[1, 0].when_pressed = self.robot_forward
-            self._bd[2, 0].when_pressed = self.robot_forward_right
-            self._bd[3, 0].when_pressed = self.robot_accelerate
-            self._bd[0, 1].when_pressed = self.robot_left
-            self._bd[1, 1].when_pressed = self.robot_stop
-            self._bd[2, 1].when_pressed = self.robot_right
-            self._bd[3, 1].when_pressed = self.robot_exit
-            self._bd[0, 2].when_pressed = self.robot_back_left
-            self._bd[1, 2].when_pressed = self.robot_back
-            self._bd[2, 2].when_pressed = self.robot_back_right
-            self._bd[3, 2].when_pressed = self.robot_decelerate
+        self._bd = BlueDot(cols=4, rows=3)
+        self._bd.square = True
+        self._bd.border = True
+        self._bd[0, 0].when_pressed = self.robot_forward_left
+        self._bd[1, 0].when_pressed = self.robot_forward
+        self._bd[2, 0].when_pressed = self.robot_forward_right
+        self._bd[3, 0].when_pressed = self.robot_accelerate
+        self._bd[0, 1].when_pressed = self.robot_left
+        self._bd[1, 1].when_pressed = self.robot_stop
+        self._bd[2, 1].when_pressed = self.robot_right
+        self._bd[3, 1].when_pressed = self.robot_exit
+        self._bd[0, 2].when_pressed = self.robot_back_left
+        self._bd[1, 2].when_pressed = self.robot_back
+        self._bd[2, 2].when_pressed = self.robot_back_right
+        self._bd[3, 2].when_pressed = self.robot_decelerate
 
-            #self._bd.when_released = self.robot_stop
-            self._bd.when_client_connects = self.connect_bluedot
-            self._bd.when_client_disconnects = self.disconnect_bluedot
+        #self._bd.when_released = self.robot_stop
+        self._bd.when_client_connects = self.connect_bluedot
+        self._bd.when_client_disconnects = self.disconnect_bluedot
 
-            self._speed = 1
-            self._direction = self.CONST_STOP
+        self._speed = 1
+        self._direction = self.CONST_STOP
 
-            pause()
+        pause()
 
-        except ServiceExit:
-            self._speed = 0
-        except:
-            self._speed = 0
         return
 
-def main():
-    bd_robot = BlueDotRobot()
-    bd_robot.start()
-    return
+    def main(self):
+
+        # Register the signal handlers
+        signal.signal(signal.SIGTERM, self.service_shutdown)
+
+        try:
+            self.start()
+        except ServiceExit:
+            print('Exiting main program')
+        return
 
 if __name__ == "__main__":
-    main()
+    bd_robot = BlueDotRobot()
+    bd_robot.start()
