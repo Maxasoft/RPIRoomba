@@ -113,7 +113,7 @@ if __name__ == "__main__":
     bot.start()
     bot.safe()
 
-    bd = BlueDot(cols=3, row=3)
+    bd = BlueDot(cols=3, rows=3)
     bd.square = True
     bd[0, 0].when_pressed = robot_forward_left
     bd[1, 0].when_pressed = robot_forward
