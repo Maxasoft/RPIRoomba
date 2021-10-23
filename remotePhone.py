@@ -9,7 +9,7 @@
 
 import pycreate2
 import time
-from bluedot import BlueDot
+from bluedot import BlueDot, COLORS
 from signal import pause
 
 _speed = 1
@@ -117,7 +117,9 @@ if __name__ == "__main__":
 
         bd = BlueDot(cols=3, rows=3)
         bd.square = True
+        bd.border = True
         bd[0, 0].when_pressed = robot_forward_left
+        bd[1, 0].color = '00FF00'
         bd[1, 0].when_pressed = robot_forward
         bd[2, 0].when_pressed = robot_forward_right
         bd[0, 1].when_pressed = robot_left
