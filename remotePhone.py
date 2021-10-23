@@ -98,6 +98,10 @@ class BlueDotRobot:
         self.robot_move(l, r, 1, m)
         return
 
+    def robot_exit(self):
+        self._bot.drive_stop()
+        return
+
     def connect_bluedot(self):
         print('BlueDot Connected...')
         return
@@ -120,18 +124,21 @@ class BlueDotRobot:
             self._bot.start()
             self._bot.safe()
 
-            self._bd = BlueDot(cols=3, rows=3)
+            self._bd = BlueDot(cols=4, rows=3)
             self._bd.square = True
             self._bd.border = True
             self._bd[0, 0].when_pressed = self.robot_forward_left
             self._bd[1, 0].when_pressed = self.robot_forward
             self._bd[2, 0].when_pressed = self.robot_forward_right
             self._bd[0, 1].when_pressed = self.robot_left
-            self._bd[1, 1].when_pressed = self.robot_stop
+            self._bd[1, 1].when_pressed = self.robot_exit
             self._bd[2, 1].when_pressed = self.robot_right
             self._bd[0, 2].when_pressed = self.robot_back_left
             self._bd[1, 2].when_pressed = self.robot_back
             self._bd[2, 2].when_pressed = self.robot_back_right
+            self._bd[0, 3].when_pressed = self.robot_accelerate
+            self._bd[1, 3].when_pressed = self.robot_exit
+            self._bd[2, 3].when_pressed = self.robot_decelerate
 
             self._bd.when_released = self.robot_stop
             self._bd.when_client_connects = self.connect_bluedot
@@ -142,11 +149,9 @@ class BlueDotRobot:
             pause()
 
         except KeyboardInterrupt:
-            self.bot.drive_stop()
-            time.sleep(0.1)
+            self.robot_exit()
         except:
-            self.bot.drive_stop()
-            time.sleep(0.1)
+            self.robot_exit()
         return
 
 def main():
