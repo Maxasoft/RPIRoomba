@@ -151,7 +151,6 @@ class BlueDotRobot:
 
     def robot_exit(self):
         self._bot.drive_stop()
-        raise ServiceExit
         return
 
     def connect_bluedot(self):
@@ -162,10 +161,6 @@ class BlueDotRobot:
         print('BlueDot Disconnected...')
         return
     
-    def service_shutdown(signum, frame):
-        print('Caught signal %d' & signum)
-        raise ServiceExit
-
     def start(self):
         # Create a Create2 Bot
         port = '/dev/ttyUSB0'  # this is the serial port on my raspberry pi
@@ -205,17 +200,22 @@ class BlueDotRobot:
 
         return
 
-    def main(self):
+def service_shutdown(signum, frame):
+    print('Caught signal %d' & signum)
+    raise ServiceExit
 
-        # Register the signal handlers
-        signal.signal(signal.SIGTERM, self.service_shutdown)
+def main():
 
-        try:
-            self.start()
-        except ServiceExit:
-            print('Exiting main program')
-        return
+    # Register the signal handlers
+    signal.signal(signal.SIGTERM, service_shutdown)
+
+    try:
+        bd_robot = BlueDotRobot()
+        bd_robot.start()
+    except ServiceExit:
+        print('Exiting main program')
+        bd_robot.robot_exit()
+    return
 
 if __name__ == "__main__":
-    bd_robot = BlueDotRobot()
-    bd_robot.start()
+    main()
