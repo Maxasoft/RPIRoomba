@@ -100,6 +100,7 @@ class BlueDotRobot:
 
     def robot_exit(self):
         self._bot.drive_stop()
+        raise KeyboardInterrupt
         return
 
     def connect_bluedot(self):
@@ -108,7 +109,6 @@ class BlueDotRobot:
 
     def disconnect_bluedot(self):
         print('BlueDot Disconnected...')
-        raise KeyboardInterrupt
         return
     
     def main(self):
@@ -149,9 +149,9 @@ class BlueDotRobot:
             pause()
 
         except KeyboardInterrupt:
-            self.robot_exit()
+            self._speed = 0
         except:
-            self.robot_exit()
+            self._speed = 0
         return
 
 def main():
