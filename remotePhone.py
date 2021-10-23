@@ -144,8 +144,6 @@ class BlueDotRobot:
             self._bd.when_client_connects = self.connect_bluedot
             self._bd.when_client_disconnects = self.disconnect_bluedot
 
-            self._speed = 1
-
             pause()
 
         except KeyboardInterrupt:
