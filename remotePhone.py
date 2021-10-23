@@ -204,7 +204,7 @@ class BlueDotRobot:
             signal.pause()
         except ServiceExit:
             print('Exiting main program')
-            self.bd_robot.robot_exit()
+            self.robot_exit()
 
         return
 
