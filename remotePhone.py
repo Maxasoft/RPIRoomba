@@ -204,8 +204,8 @@ class BlueDotRobot:
             self._bd[2, 2].when_pressed = self.robot_back_right
             self._bd[3, 2].visible = False
             self._bd[4, 2].when_pressed = self.robot_decelerate
-            self._bd[4, 0].color = "red"
-            self._bd[4, 0].square = False
+            self._bd[4, 2].color = "red"
+            self._bd[4, 2].square = False
 
 
             #self._bd.when_released = self.robot_stop
