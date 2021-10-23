@@ -99,6 +99,7 @@ def connect_bluedot():
 
 def disconnect_bluedot():
     print('BlueDot Disconnected...')
+    raise KeyboardInterrupt
     return
 
 if __name__ == "__main__":
@@ -132,6 +133,9 @@ if __name__ == "__main__":
 
         pause()
 
+    except KeyboardInterrupt:
+        bot.drive_stop()
+        time.sleep(0.1)
     except:
         bot.drive_stop()
         time.sleep(0.1)
